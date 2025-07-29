@@ -1,0 +1,14 @@
+# Python junk files
+*.pyc
+__pycache__/
+
+# Virtual environments
+venv/
+env/
+
+# Static files for production
+staticfiles/
+
+*.vec
+*.txt
+cp/embeddings/

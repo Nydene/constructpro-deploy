@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Select Company & Project</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: #fff;
+      padding: 30px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%; max-width: 400px;
+    }
+
+    .login-container h1 {
+      margin: 0 0 20px;
+      font-size: 24px;
+      text-align: center;
+      color: #333;
+    }
+
+    .login-container label {
+      display: block;
+      margin-bottom: 15px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .login-container select,
+    .login-container input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background-color: #add8e6;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-container button:hover {
+      background-color: #94cde6;
+    }
+
+    ul.messages {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 20px;
+      color: #d9534f;
+    }
+
+    select:invalid {
+      color: gray;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Select Company & Project</h1>
+
+    <p style="margin-bottom:20px; color:#333; font-size:14px;">
+      <strong>User:</strong> {{ user.id }} – {{ user.name }}
+    </p>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for m in messages %}
+          <li>{{ m }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- COMPANY DROPDOWN -->
+      <label>
+        Company:
+        <select id="companySelect" name="company_id" required>
+          <option value="" disabled selected hidden>— pick a company —</option>
+          {% for c in companies %}
+            <option value="{{ c.id }}">{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <!-- PROJECT DROPDOWN -->
+      <div id="projectSection" style="display:none;">
+        <label>
+          Project:
+          <select name="project_id" required>
+            <option value="" disabled selected hidden>— pick a project —</option>
+            {% for p in projects %}
+              <option value="{{ p.id }}">{{ p.project_number }} - {{ p.name }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+
+      <button type="submit">Continue</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('companySelect').addEventListener('change', function () {
+      document.getElementById('projectSection').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
