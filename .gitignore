@@ -6,6 +6,32 @@ __pycache__/
 venv/
 env/
 
+# Django-related
+db.sqlite3
+*.log
+
 # Static files for production
 staticfiles/
 
+# Node/npm-related (in case of frontend integration)
+node_modules/
+*.lock
+
+# VS Code settings (optional)
+.vscode/
+
+# PyCharm settings (optional)
+.idea/
+
+# Ignore all .vec and .txt files globally
+*.vec
+*.txt
+
+# But include these specific files for Git LFS (embeddings)
+!cp/embeddings/glove.6B.200d.txt
+!cp/embeddings/glove.6B.200d.word2vec.txt
+
+# Prevent blanket ignore of the embeddings folder
+cp/embeddings/*
+!cp/embeddings/glove.6B.200d.txt
+!cp/embeddings/glove.6B.200d.word2vec.txt
