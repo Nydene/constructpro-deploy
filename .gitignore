@@ -27,9 +27,9 @@ node_modules/
 *.vec
 *.txt
 
-# Unignore folder first (IMPORTANT!)
+# Unignore the embeddings folder
 !cp/embeddings/
 
-# Allow these specific embedding files
+# Allow specific embedding .txt files
 !cp/embeddings/glove.6B.200d.txt
 !cp/embeddings/glove.6B.200d.word2vec.txt
