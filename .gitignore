@@ -9,6 +9,3 @@ env/
 # Static files for production
 staticfiles/
 
-*.vec
-*.txt
-cp/embeddings/
