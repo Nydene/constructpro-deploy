@@ -27,11 +27,9 @@ node_modules/
 *.vec
 *.txt
 
-# But include these specific files for Git LFS (embeddings)
-!cp/embeddings/glove.6B.200d.txt
-!cp/embeddings/glove.6B.200d.word2vec.txt
+# Unignore folder first (IMPORTANT!)
+!cp/embeddings/
 
-# Prevent blanket ignore of the embeddings folder
-cp/embeddings/*
+# Allow these specific embedding files
 !cp/embeddings/glove.6B.200d.txt
 !cp/embeddings/glove.6B.200d.word2vec.txt
