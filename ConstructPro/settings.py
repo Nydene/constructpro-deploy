@@ -12,7 +12,7 @@ DEBUG = True  # Set to False for production
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
-    '13.54.170.174',
+    '13.54.198.222',
     'ai.mavericksolutionsinc.ph',
 ]
 
@@ -111,3 +111,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
