@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Upload Mode</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f7fa;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Card */
+    .card {
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+      width: 500px;
+      max-width: 90%;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .card h1 {
+      margin-bottom: 28px;
+      font-size: 24px;
+      color: #333;
+    }
+
+    /* Options container */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .options input[type="radio"] {
+      display: none;
+    }
+
+    .options label span {
+      display: block;
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      background: #fff;
+      color: #007bff;
+      font-size: 16px;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: 0.2s all ease;
+    }
+
+    /* Hover effect */
+    .options label span:hover {
+      background: #e6f0ff;
+    }
+
+    /* Selected mode with animated gradient */
+    .options input[type="radio"]:checked + label span {
+      color: #fff;
+      font-weight: bold;
+      border-color: transparent;
+      box-shadow: 0 0 12px rgba(0, 123, 255, 0.4);
+      transform: scale(1.02);
+      animation: pulse 0.2s ease-out;
+
+      /* Moving blue gradient */
+      background: linear-gradient(
+        270deg,
+        #4facfe,
+        #00f2fe,
+        #4facfe
+      );
+      background-size: 600% 600%;
+      animation: gradientMove 4s ease infinite, pulse 0.2s ease-out;
+    }
+
+    /* Pulsing effect */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1.02); }
+    }
+
+    /* Moving gradient animation */
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Continue Button */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #00c6ff; /* ✅ Static blue */
+      color: #fff;
+      cursor: not-allowed;
+      opacity: 0.6;
+      transition: 0.3s;
+      box-sizing: border-box;
+    }
+    .btn.enabled {
+      cursor: pointer;
+      opacity: 1;
+      background: #00c6ff; /* ✅ Static blue stays */
+    }
+    .btn.enabled:hover {
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Choose Upload Mode</h1>
+    <form method="post">
+      {% csrf_token %}
+      <div class="options">
+        <input type="radio" id="mode-full" name="mode" value="full" required>
+        <label for="mode-full"><span>Full Consolidation: Projects + Invoices + Expenses</span></label>
+
+        <input type="radio" id="mode-ie" name="mode" value="ie">
+        <label for="mode-ie"><span>Invoice & Expense Consolidation by Project</span></label>
+
+        <input type="radio" id="mode-uncons" name="mode" value="uncons">
+        <label for="mode-uncons"><span>Standard Import (Unconsolidated)</span></label>
+      </div>
+
+      <button type="submit" id="continueBtn" class="btn">Continue</button>
+    </form>
+  </div>
+
+  <script>
+    const btn = document.getElementById('continueBtn');
+    document.querySelectorAll('input[name="mode"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        btn.disabled = false;
+        btn.classList.add('enabled');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Full Consolidation: Projects + Invoices + Expenses</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      padding: 40px 0;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      width: 100%;
+      max-width: 900px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .card-header {
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      padding: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      color: #333;
+    }
+    .card-body { padding: 30px; }
+
+    /* ALERT BOXES */
+    .alert {
+      padding: 12px 16px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      font-size: 14px;
+      border: 1px solid transparent;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.4;
+    }
+    .alert .icon { font-size: 18px; line-height: 1; margin-top: 2px; }
+    .alert-warning { background: #fff3cd; color: #856404; border-color: #ffeeba; }
+    .alert-success { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+    .alert-danger  { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+    .alert-info    { background: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+
+    .form-label { font-weight: bold; margin-bottom: 10px; display: block; }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+
+    /* Upload button w/ MSI loader */
+    #uploadBtn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #add8e6;
+      border: none;
+      border-radius: 5px;
+      padding: 14px;
+      color: white;
+      cursor: pointer;
+      width: 100%;
+      height: 48px;
+      position: relative;
+      margin-top: 5px;
+    }
+    #uploadBtn:disabled { opacity: 0.7; cursor: not-allowed; }
+    #msiLoader { display: none; gap: 2px; }
+    #uploadBtn .char { animation: dropLoop 1.6s ease-in-out infinite; display: inline-block; opacity: 0; }
+    #uploadBtn .char:nth-child(1){ animation-delay: 0.0s; }
+    #uploadBtn .char:nth-child(2){ animation-delay: 0.1s; }
+    #uploadBtn .char:nth-child(3){ animation-delay: 0.2s; }
+    #uploadBtn .char:nth-child(4){ animation-delay: 0.3s; }
+    #uploadBtn .char:nth-child(5){ animation-delay: 0.4s; }
+    #uploadBtn .char:nth-child(6){ animation-delay: 0.5s; }
+
+    @keyframes dropLoop {
+      0% { transform: translateY(-20px); opacity: 0; }
+      30% { transform: translateY(0); opacity: 1; }
+      80% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-20px); opacity: 0; }
+    }
+
+    .btn-primary {
+      background-color: #add8e6;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover { background-color: #94cde6; }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .btn-secondary:hover { background-color: #5a6268; }
+
+    .button-group { text-align: center; margin-top: 15px; }
+
+    .preview-section { margin-top: 30px; }
+    .preview-section h4 { margin-bottom: 15px; color: #333; }
+
+    .table-container { overflow-x: auto; border: 1px solid #eee; border-radius: 5px; }
+    table { width: 100%; border-collapse: collapse; }
+    table, th, td { border: 1px solid #ddd; }
+    th, td { padding: 8px; text-align: center; }
+    th { background-color: #f0f8ff; }
+
+    .disclaimer {
+      background: #fff3cd;
+      color: #856404;
+      font-size: 14px;
+      border: 1px solid #ffeeba;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+    .disclaimer ul { margin: 10px 0 0 20px; padding: 0; }
+
+    /* Collapsible guide */
+    .collapsible-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #e8f4fd;
+      border: 1px solid #b6defb;
+      color: #0c5460;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 12px 0 6px 0;
+    }
+    .collapsible-btn:focus { outline: 2px solid #94cde6; outline-offset: 2px; }
+    .chevron { transition: transform .2s ease; font-size: 16px; }
+    .chevron.rotate { transform: rotate(180deg); }
+
+    .format-guide {
+      margin-bottom: 20px;
+      background: #e8f4fd;
+      border: 1px solid #b6defb;
+      border-radius: 6px;
+      padding: 15px;
+      font-size: 14px;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height .25s ease, opacity .25s ease;
+    }
+    .format-guide.open { max-height: 500px; opacity: 1; }
+    .format-guide ul { margin-left: 20px; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-header">Full Consolidation: Projects + Invoices + Expenses</div>
+    <div class="card-body">
+
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          <span class="icon">
+            {% if message.tags == 'success' %}✅{% elif message.tags == 'warning' %}⚠️{% elif message.tags == 'error' or message.tags == 'danger' %}❌{% else %}ℹ️{% endif %}
+          </span>
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+
+      {# Success banners only when no fresh previews are shown #}
+      {% if request.session.full_invoices_imported and request.session.full_expenses_imported and not preview_projects and not preview_invoices and not preview_expenses %}
+        <div class="alert alert-success"><span class="icon">✅</span><span>All <b>Invoices</b> and <b>Expenses</b> have been processed. You can upload another file below.</span></div>
+      {% elif request.session.full_invoices_imported and not preview_projects and not preview_invoices and not preview_expenses %}
+        <div class="alert alert-success"><span class="icon">✅</span><span><b>Invoices</b> imported. You may still import <b>Expenses</b>, or upload another file.</span></div>
+      {% elif request.session.full_expenses_imported and not preview_projects and not preview_invoices and not preview_expenses %}
+        <div class="alert alert-success"><span class="icon">✅</span><span><b>Expenses</b> imported. You may still import <b>Invoices</b>, or upload another file.</span></div>
+      {% endif %}
+
+      {% if warnings_invoice %}
+        <div class="alert alert-warning">
+          <span class="icon">⚠️</span>
+          <div>
+            <strong>Invoice Warnings:</strong>
+            <ul>{% for w in warnings_invoice %}<li>{{ w }}</li>{% endfor %}</ul>
+          </div>
+        </div>
+      {% endif %}
+      {% if warnings_expense %}
+        <div class="alert alert-warning">
+          <span class="icon">⚠️</span>
+          <div>
+            <strong>Expense Warnings:</strong>
+            <ul>{% for w in warnings_expense %}<li>{{ w }}</li>{% endfor %}</ul>
+          </div>
+        </div>
+      {% endif %}
+
+      {# Info: projects auto-created #}
+      {% if preview_invoices or preview_expenses %}
+        <div class="alert alert-info">
+          <span class="icon">ℹ️</span>
+          <span>Projects are created automatically in the database if they don’t already exist.</span>
+        </div>
+      {% endif %}
+
+      {# Optional: show that all projects already exist #}
+      {% if all_projects_existing %}
+        <div class="alert alert-info">
+          <span class="icon">ℹ️</span>
+          <span>All projects in this file already exist in the database.</span>
+        </div>
+      {% endif %}
+
+      <!-- Upload Form -->
+      <form id="uploadForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="raw_file" class="form-label">Upload Full Consolidated File:</label>
+        <input type="file" name="raw_file" id="raw_file" required>
+
+        <!-- Collapsible Format Guide -->
+        <button type="button" id="toggleGuideBtn" class="collapsible-btn" aria-expanded="false" aria-controls="formatGuide">
+          <span>Show Format Guide</span>
+          <span class="chevron" id="guideChevron">▾</span>
+        </button>
+
+        <div id="formatGuide" class="format-guide" aria-hidden="true">
+          <strong>Accepted Format:</strong>
+          <p>CSV or Excel with columns:</p>
+          <ul>
+            <li><code>Project</code> — Project Name</li>
+            <li><code>Date</code> — Transaction date (YYYY-MM-DD)</li>
+            <li><code>Amount</code> — Numeric</li>
+            <li><code>Type</code> — <b>Invoice</b> or <b>Expense</b></li>
+            <li>(Optional) <code>Estimated Expenses</code> for projects</li>
+          </ul>
+          <p>✅ Each row’s <b>Type</b> decides routing: <i>Invoice → invoice_date</i>, <i>Expense → expense_date</i>.</p>
+        </div>
+
+        <button type="submit" id="uploadBtn">
+          <span id="uploadText">Process File</span>
+          <span id="msiLoader">
+            <span class="char">M</span><span class="char">S</span><span class="char">I</span><span class="char">.</span><span class="char">.</span><span class="char">.</span>
+          </span>
+        </button>
+      </form>
+
+      <div class="disclaimer">
+        <strong>Disclaimer:</strong> This page processes files for preview only.
+        <ul>
+          <li>Projects will be auto-created if missing</li>
+          <li>Invoices and Expenses can only be imported after projects exist</li>
+        </ul>
+      </div>
+
+      {% if preview_projects or preview_invoices or preview_expenses %}
+        <div class="button-group" style="margin-bottom:20px;">
+          <form method="get" action="{% url 'download_consolidated_csv' %}" style="display:inline;">
+            <button type="submit" class="btn-secondary">Download All-in-One CSV</button>
+          </form>
+
+          <form method="post" action="{% url 'import_full_consolidated' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-primary" style="width:auto;"
+              {% if request.session.full_invoices_imported and request.session.full_expenses_imported and not preview_projects and not preview_invoices and not preview_expenses %}disabled{% endif %}>
+              Import All (Invoices + Expenses)
+            </button>
+          </form>
+        </div>
+      {% endif %}
+
+      {% if preview_projects %}
+        <div class="preview-section">
+          <h4>Preview of Projects</h4>
+          <div class="table-container">{{ preview_projects|safe }}</div>
+
+          <div class="button-group">
+            <form method="get" action="{% url 'download_projects_csv' %}" style="display:inline;">
+              <button type="submit" class="btn-secondary">Download Projects CSV</button>
+            </form>
+
+            {% if all_projects_existing %}
+              <span style="display:inline-block; margin-left:10px; color:#0c5460; font-weight:bold;">
+                ℹ️ Projects already exist in the database
+              </span>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if preview_invoices %}
+        <div class="preview-section">
+          <h4>Preview of Invoices</h4>
+          <div class="table-container">{{ preview_invoices|safe }}</div>
+
+          <div class="button-group">
+            <form method="get" action="{% url 'download_invoices_csv' %}" style="display:inline;">
+              <button type="submit" class="btn-secondary">Download Invoices CSV</button>
+            </form>
+            <form method="post" action="{% url 'import_invoices_only' %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn-primary" style="width:auto;"
+                {% if not projects_imported and not all_projects_existing %}disabled title="Import projects first"{% endif %}>
+                Import Invoices Only
+              </button>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if preview_expenses %}
+        <div class="preview-section">
+          <h4>Preview of Expenses</h4>
+          <div class="table-container">{{ preview_expenses|safe }}</div>
+
+          <div class="button-group">
+            <form method="get" action="{% url 'download_expenses_csv' %}" style="display: inline;">
+              <button type="submit" class="btn-secondary">Download Expenses CSV</button>
+            </form>
+            <form method="post" action="{% url 'import_expenses_only' %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn-primary" style="width:auto;"
+                {% if not projects_imported and not all_projects_existing %}disabled title="Import projects first"{% endif %}>
+                Import Expenses Only
+              </button>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- JavaScript for MSI Loader + collapsible guide + auto-hide -->
+  <script>
+    document.getElementById('uploadForm')?.addEventListener('submit', function () {
+      const btn = document.getElementById('uploadBtn');
+      const text = document.getElementById('uploadText');
+      const loader = document.getElementById('msiLoader');
+      btn.disabled = true;
+      if (text) text.style.display = 'none';
+      if (loader) loader.style.display = 'flex';
+    });
+
+    // Collapsible Format Guide
+    (function () {
+      const btn = document.getElementById('toggleGuideBtn');
+      const box = document.getElementById('formatGuide');
+      const chev = document.getElementById('guideChevron');
+      if (!btn || !box || !chev) return;
+
+      btn.addEventListener('click', () => {
+        const isOpen = box.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(isOpen));
+        box.setAttribute('aria-hidden', String(!isOpen));
+        btn.firstElementChild.textContent = isOpen ? 'Hide Format Guide' : 'Show Format Guide';
+        chev.classList.toggle('rotate', isOpen);
+      });
+    })();
+
+    // Auto-hide success/info after 5s
+    setTimeout(() => {
+      document.querySelectorAll('.alert-success, .alert-info').forEach(el => el.remove());
+    }, 5000);
+  </script>
+</body>
+</html>
