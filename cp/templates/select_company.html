@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Select Company & Project</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh;
+    }
+
+    /* Header bar for Back/Home */
+    .header-bar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 15px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+    .header-btn {
+      background-color: #007bff; /* Unified blue */
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .header-btn:hover {
+      background-color: #0056b3;
+      transform: scale(1.03);
+    }
+
+    .login-container {
+      background: #fff;
+      padding: 30px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%; max-width: 400px;
+      margin-top: 70px; /* space for fixed header */
+    }
+
+    .login-container h1 {
+      margin: 0 0 20px;
+      font-size: 24px;
+      text-align: center;
+      color: #333;
+    }
+
+    .login-container label {
+      display: block;
+      margin-bottom: 15px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .login-container select,
+    .login-container input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    /* Unified blue button style */
+    .login-container button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .login-container button:hover {
+      background-color: #0056b3;
+      transform: scale(1.02);
+    }
+
+    ul.messages {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 20px;
+      color: #d9534f;
+    }
+
+    select:invalid {
+      color: gray;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Back & Home buttons -->
+  <div class="header-bar">
+    <button class="header-btn" onclick="history.back()">← Back</button>
+    <a href="{% url 'choose_mode' %}" class="header-btn">Home</a>
+  </div>
+
+  <div class="login-container">
+    <h1>
+      {% if next_mode == 'full' %}
+        Select Company
+      {% else %}
+        Select Company & Project
+      {% endif %}
+    </h1>
+
+    <p style="margin-bottom:20px; color:#333; font-size:14px;">
+      <strong>User:</strong> {{ user.id }} – {{ user.name }}
+    </p>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for m in messages %}
+          <li>{{ m }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- COMPANY DROPDOWN -->
+      <label>
+        Company:
+        <select name="company_id" required>
+          <option value="" disabled selected hidden>— pick a company —</option>
+          {% for c in companies %}
+            <option value="{{ c.id }}">{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <!-- PROJECT DROPDOWN only if not full consolidation -->
+      {% if next_mode != 'full' %}
+      <label>
+        Project:
+        <select name="project_id" required>
+          <option value="" disabled selected hidden>— pick a project —</option>
+          {% for p in projects %}
+            <option value="{{ p.id }}">{{ p.project_number }} - {{ p.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      {% endif %}
+
+      <button type="submit">Continue</button>
+    </form>
+  </div>
+</body>
+</html>
